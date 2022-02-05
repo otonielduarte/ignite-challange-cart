@@ -71,7 +71,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     try {
       if (amount < 1) return;
       const stockAmout = await getStock(productId);
-      if (stockAmout !== undefined && stockAmout >= amount) {
+      if (stockAmout >= amount) {
         const updatedProductList = cart.map(product => {
           if (product.id === productId) product.amount = amount;
           return product;
@@ -86,11 +86,10 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     }
   };
 
-  async function getStock(productId: number): Promise<number | undefined> {
+  async function getStock(productId: number): Promise<number> {
     try {
       const resultStock = await api.get<Stock>(`/stock/${productId}`);
-      if (resultStock.status === 200) return resultStock.data.amount;
-      else new Error('Erro na alteração de quantidade do produto')
+      return resultStock.data.amount;
     } catch (e) {
       throw new Error('Erro na alteração de quantidade do produto');
     }
